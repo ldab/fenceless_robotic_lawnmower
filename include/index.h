@@ -1,7 +1,6 @@
 #include "Arduino.h"
 
 const char HTTP_INDEX[] PROGMEM = R"rawliteral(
-<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -73,18 +72,16 @@ const char HTTP_INDEX[] PROGMEM = R"rawliteral(
     <div id="info">
       <br/>
       <button class="btn" value="Normal" onclick="onModeChange(this.value)">Normal</button>
-      <button class="btn" value="Spin" onclick="onModeChange(this.value)">Spin</button>
       <button class="btn" value="Arm" onclick="onModeChange(this.value)">Arm</button>
-      <button class="btn" value="Gripper" onclick="onModeChange(this.value)">Gripper</button>
-      <button class="btn" value="Head" onclick="onModeChange(this.value)">Head</button>
-      <button class="btn" value="Camera" onclick="onModeChange(this.value)">Toggle Camera</button>
-      <button class="btn" value="Led" onclick="onModeChange(this.value)">Toggle LED</button>
+      <button class="btn" value="saveWaypoint" onclick="onModeChange(this.value)">Save waypoint</button>
+      <button class="btn" onclick="location.href = './config'">Config</button></form>
+      <button class="btn" onclick="location.href = './info'">Info</button></form>
       <p></p>
-      <span id="resultLeft"></span> <span id="resultRight"></span>
+      <span id="resultLeft"></span> <span id="resultRight"></span> <span id="StaRssi"></span>
     </div> 
     <script>
-      %VIRTUALJOYSTICK%
-    </script>
+        %VIRTUALJOYSTICK%
+    </script> 
     <script>
       const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
       var roverConnected = false;
@@ -100,7 +97,7 @@ const char HTTP_INDEX[] PROGMEM = R"rawliteral(
       console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
 
       function connect() {
-        connection = new WebSocket('ws://192.168.4.1:80/ws');
+        connection = new WebSocket('ws://%SERVER_IP%:80/ws');
 
         connection.onopen = function () {
           console.log("Websocket Open");
@@ -118,8 +115,17 @@ const char HTTP_INDEX[] PROGMEM = R"rawliteral(
         };
 
         connection.onmessage = function (e) {
-          console.log('WS Bin length', e.data.size);
-          if (e.data.size !== (13 * 4)) return; // We expect 13 float values.
+        //   console.log('WS Bin length', e.data.size);
+        //   if (e.data.size !== (13 * 4)) return; // We expect 13 float values.
+           if (e.data.size == (2)){
+            var buffer = e.data.arrayBuffer().then((buffer) => {
+            var values = new Int8Array(buffer);
+
+            var StaRssi	= document.getElementById('StaRssi');
+            StaRssi.innerHTML	= '<b>StaRssi:</b> ' + values[0] + 'dBm'
+            });
+           }
+           else{
            var buffer = e.data.arrayBuffer().then((buffer) => {
              var values = new Float32Array(buffer);
              var data = {
@@ -138,7 +144,8 @@ const char HTTP_INDEX[] PROGMEM = R"rawliteral(
               angleZ: values[12],
              };
              // TODO Do something with the data
-           });
+            });
+            }
         };
 
         connection.onclose = function (e) {

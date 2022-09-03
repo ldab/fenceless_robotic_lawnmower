@@ -23,7 +23,8 @@ static void handle_controller_disconnected(uint16_t last_sampled_signal)
 
 static void handle_wifi_controller_status(WifiControllerStatus status)
 {
-  ESP_LOGI(__func__, "Wifi Controller status: %d\n", status);
+  ESP_LOGI(__func__, "Wifi Controller status: %s\n",
+           status ? "DISCONNECTED" : "CONNECTED");
   if (status != WIFI_CONTROLLER_CONNECTED) {
     handle_controller_disconnected(0);
     wifi_control_enabled = false;

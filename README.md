@@ -1,27 +1,28 @@
 # fenceless-robotic-lawnmower
 
+[![GitHub version](https://img.shields.io/github/v/release/ldab/fenceless_robotic_lawnmower?include_prereleases)](https://github.com/ldab/fenceless_robotic_lawnmower/releases/latest)
+![Build Status](https://github.com/ldab/fenceless_robotic_lawnmower/actions/workflows/workflow.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/ldab/fenceless_robotic_lawnmower/blob/master/LICENSE)
 
+[![GitHub last commit](https://img.shields.io/github/last-commit/ldab/fenceless_robotic_lawnmower.svg?style=social)](https://github.com/ldab/fenceless_robotic_lawnmower)
 
-* SPP (Ble) server
-* SPP (Ble) client
+## TODO
+- [ ] Bridge AP and STA https://github.com/espressif/esp-gateway
 
-# Flashing the firmware
+## Apps
 
-```
-$python esptool.py esp32s3 -p COMx write_flash 0x0 bootloader/bootloader.bin 0x10000 spp_XXXX.bin 0x8000 partition_table/partition-table.bin
-```
+* Base
+* Mower
 
-# How to use it:
+### WiFi Remote Control
 
-1. Flash board with the firmware;
-2. SPP (Ble) server waits for incoming connection;
-3. SPP (Ble) client connects and start sending data forever;
-4. Reset both units to start again.
+<img src="./images/wifi_control.jpg" width="30%"> 
 
-# Scrapbook:
+## Scrapbook:
 
-* Board dfinition: https://github.com/platformio/platform-espressif32/blob/master/boards/esp32-s3-devkitc-1.json
+* Board definition: https://github.com/platformio/platform-espressif32/blob/master/boards/esp32-s3-devkitc-1.json
+* Circle distance between two points: https://en.wikipedia.org/wiki/Haversine_formula
 
-# Credits:
+## Credits:
 
 * Mars Rover: https://github.com/jakkra/Mars-Rover

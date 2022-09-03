@@ -1,13 +1,12 @@
 #include "wifi_helper.h"
 #include <esp_wifi.h>
 
-#define WIFI_STA_SSID "SSID"
-#define WIFI_STA_PASS "PASS"
+#define WIFI_STA_SSID    "SSID"
+#define WIFI_STA_PASS    "PASS"
 #define WIFI_AP_SSID     "nora-w1-ssid"
 #define WIFI_AP_PASS     "nora-w1-pass"
 #define WIFI_AP_CHANNEL  11
 #define WIFI_AP_MAX_CONN 1
-
 
 volatile bool wifi_sta_connected = false;
 volatile bool wifi_ap_connected  = false;
@@ -91,4 +90,11 @@ void wifi_init_softapsta(void)
 
   WiFi.begin(WIFI_STA_SSID, WIFI_STA_PASS);
   WiFi.softAP(WIFI_AP_SSID, WIFI_AP_PASS, 1, 0, 2, false);
+}
+
+int8_t wifi_ap_get_sta_rssi(void)
+{
+  wifi_sta_list_t clients;
+  esp_wifi_ap_get_sta_list(&clients);
+  return clients.sta->rssi;
 }

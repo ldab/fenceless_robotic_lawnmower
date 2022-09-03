@@ -15,3 +15,4 @@ extern volatile bool wifi_ap_connected;
 void wifi_init_sta(void);
 void wifi_init_softap(const char *ssid = NULL, const char *password = NULL);
 void wifi_init_softapsta(void);
+int8_t wifi_ap_get_sta_rssi(void);
