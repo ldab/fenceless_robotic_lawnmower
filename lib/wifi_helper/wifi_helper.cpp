@@ -61,7 +61,7 @@ void wifi_init_softap(const char *ssid, const char *password)
     WiFi.softAP(WIFI_AP_SSID, WIFI_AP_PASS, WIFI_AP_CHANNEL, 0,
                 WIFI_AP_MAX_CONN);
   } else {
-    WiFi.softAP(ssid, password, WIFI_AP_CHANNEL, 0, WIFI_AP_MAX_CONN);
+    WiFi.softAP(ssid, password, WIFI_AP_CHANNEL, false, WIFI_AP_MAX_CONN);
   }
 }
 
@@ -89,7 +89,7 @@ void wifi_init_softapsta(void)
                                          WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N);
 
   WiFi.begin(WIFI_STA_SSID, WIFI_STA_PASS);
-  WiFi.softAP(WIFI_AP_SSID, WIFI_AP_PASS, 1, 0, 2, false);
+  WiFi.softAP(WIFI_AP_SSID, WIFI_AP_PASS, WIFI_AP_CHANNEL, true, WIFI_AP_MAX_CONN);
 }
 
 int8_t wifi_ap_get_sta_rssi(void)
