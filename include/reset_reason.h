@@ -86,55 +86,55 @@ void print_reset_reason(int reason)
 void verbose_print_reset_reason(void)
 {
   for (size_t i = 0; i <= 1; i++) {
-
+    
     switch (rtc_get_reset_reason(i)) {
     case 1:
-      Serial.println("Vbat power on reset");
+      log_i("Core%d - Vbat power on reset", i);
       break;
     case 3:
-      Serial.println("Software reset digital core");
+      log_i("Core%d - Software reset digital core", i);
       break;
     case 4:
-      Serial.println("Legacy watch dog reset digital core");
+      log_i("Core%d - Legacy watch dog reset digital core", i);
       break;
     case 5:
-      Serial.println("Deep Sleep reset digital core");
+      log_i("Core%d - Deep Sleep reset digital core", i);
       break;
     case 6:
-      Serial.println("Reset by SLC module, reset digital core");
+      log_i("Core%d - Reset by SLC module, reset digital core", i);
       break;
     case 7:
-      Serial.println("Timer Group0 Watch dog reset digital core");
+      log_i("Core%d - Timer Group0 Watch dog reset digital core", i);
       break;
     case 8:
-      Serial.println("Timer Group1 Watch dog reset digital core");
+      log_i("Core%d - Timer Group1 Watch dog reset digital core", i);
       break;
     case 9:
-      Serial.println("RTC Watch dog Reset digital core");
+      log_i("Core%d - RTC Watch dog Reset digital core", i);
       break;
     case 10:
-      Serial.println("Instrusion tested to reset CPU");
+      log_i("Core%d - Instrusion tested to reset CPU", i);
       break;
     case 11:
-      Serial.println("Time Group reset CPU");
+      log_i("Core%d - Time Group reset CPU", i);
       break;
     case 12:
-      Serial.println("Software reset CPU");
+      log_i("Core%d - Software reset CPU", i);
       break;
     case 13:
-      Serial.println("RTC Watch dog Reset CPU");
+      log_i("Core%d - RTC Watch dog Reset CPU", i);
       break;
     case 14:
-      Serial.println("for APP CPU, reseted by PRO CPU");
+      log_i("Core%d - for APP CPU, reseted by PRO CPU", i);
       break;
     case 15:
-      Serial.println("Reset when the vdd voltage is not stable");
+      log_i("Core%d - Reset when the vdd voltage is not stable", i);
       break;
     case 16:
-      Serial.println("RTC Watch dog reset digital core and rtc module");
+      log_i("Core%d - RTC Watch dog reset digital core and rtc module", i);
       break;
     default:
-      Serial.println("NO_MEAN");
+      log_i("Core%d - NO_MEAN", i);
     }
   }
 }
