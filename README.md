@@ -7,11 +7,11 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/ldab/fenceless_robotic_lawnmower.svg?style=social)](https://github.com/ldab/fenceless_robotic_lawnmower)
 
 ## TODO
-- [ ] Bridge AP and STA https://github.com/espressif/esp-gateway
+- [ ] Upload mower firmware over gateway webportal;
 
 ## Apps
 
-* Base
+* ~~Base~~ Now replaced by https://github.com/ldab/esp-gateway-long-range
 * Mower
 
 ## Concept

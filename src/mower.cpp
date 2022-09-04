@@ -71,6 +71,8 @@ void loop()
                     http.errorToString(httpCode).c_str());
     }
 
+    http.getString();
+
     http.end();
     log_i("RRSI: %ddBm", WiFi.RSSI());
   }
