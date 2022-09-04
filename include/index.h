@@ -72,7 +72,6 @@ const char HTTP_INDEX[] PROGMEM = R"rawliteral(
     <div id="info">
       <br/>
       <button class="btn" value="Normal" onclick="onModeChange(this.value)">Normal</button>
-      <button class="btn" value="Arm" onclick="onModeChange(this.value)">Arm</button>
       <button class="btn" value="saveWaypoint" onclick="onModeChange(this.value)">Save waypoint</button>
       <button class="btn" onclick="location.href = './config'">Config</button></form>
       <button class="btn" onclick="location.href = './info'">Info</button></form>

@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#include <HTTPClient.h>
+
 #include "wifi_helper.h"
 #include "wifi_remote_control.h"
 
@@ -44,51 +46,32 @@ void setup()
   esp_log_level_set("lwip", ESP_LOG_DEBUG);
   esp_log_level_set("wifi", ESP_LOG_DEBUG);
 
-  // wifi_init_sta();
+  wifi_init_sta();
 
-  wifi_init_softap();
-
-  wifi_controller_init("mower", "verysafepass", WIFI_CONTROLLER_AP);
-
+  wifi_controller_init(NULL, NULL, WIFI_CONTROLLER_AP);
   wifi_controller_register_connection_callback(&handle_wifi_controller_status);
 }
 
 void loop()
 {
 
-  // WiFiClient client;
-  // const int httpPort = 80;
-  // const char *host   = "192.168.4.1";
-  // if (!client.connect(host, httpPort)) {
-  //   ESP_LOGE(__func__, "connection failed");
-  // } else {
-  //   // We now create a URI for the request
-  //   String url = "/input/";
+  if (wifi_sta_connected) {
+    HTTPClient http;
 
-  //   Serial.print("Requesting URL: ");
-  //   Serial.println(url);
+    http.begin("http://httpbin.org/get"); // HTTP
 
-  //   // This will send the request to the server
-  //   client.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + host +
-  //                "\r\n" + "Connection: close\r\n\r\n");
-  //   unsigned long timeout = millis();
-  //   while (client.available() == 0) {
-  //     if (millis() - timeout > 5000) {
-  //       Serial.println(">>> Client Timeout !");
-  //       client.stop();
-  //       return;
-  //     }
-  //   }
+    int httpCode = http.GET();
 
-  //   // Read all the lines of the reply from server and print them to Serial
-  //   while (client.available()) {
-  //     String line = client.readStringUntil('\r');
-  //     Serial.print(line);
-  //   }
-  // }
+    // httpCode will be negative on error
+    if (httpCode > 0) {
+      // HTTP header has been send and Server response header has been handled
+      Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+    } else {
+      Serial.printf("[HTTP] GET... failed, error: %s\n",
+                    http.errorToString(httpCode).c_str());
+    }
 
-  // ESP_LOGI(__func__, "TxPower: %d", WiFi.getTxPower());
-  // ESP_LOGI(__func__, "RSSI: %ddBm", WiFi.RSSI());
-
-  // delay(5000);
+    http.end();
+    log_i("RRSI: %ddBm", WiFi.RSSI());
+  }
 }

@@ -3,8 +3,8 @@
 
 #define WIFI_STA_SSID    "SSID"
 #define WIFI_STA_PASS    "PASS"
-#define WIFI_AP_SSID     "nora-w1-ssid"
-#define WIFI_AP_PASS     "nora-w1-pass"
+#define WIFI_AP_SSID     "ESP_Gateway"
+#define WIFI_AP_PASS     "12345678"
 #define WIFI_AP_CHANNEL  11
 #define WIFI_AP_MAX_CONN 1
 
@@ -13,8 +13,6 @@ volatile bool wifi_ap_connected  = false;
 
 void WiFiEvent(WiFiEvent_t event)
 {
-  ESP_LOGI(__func__, "event: %d", event);
-
   switch (event) {
 
   case ARDUINO_EVENT_WIFI_AP_START:
@@ -89,7 +87,8 @@ void wifi_init_softapsta(void)
                                          WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N);
 
   WiFi.begin(WIFI_STA_SSID, WIFI_STA_PASS);
-  WiFi.softAP(WIFI_AP_SSID, WIFI_AP_PASS, WIFI_AP_CHANNEL, true, WIFI_AP_MAX_CONN);
+  WiFi.softAP(WIFI_AP_SSID, WIFI_AP_PASS, WIFI_AP_CHANNEL, true,
+              WIFI_AP_MAX_CONN);
 }
 
 int8_t wifi_ap_get_sta_rssi(void)

@@ -25,7 +25,7 @@ flowchart TD
     B -- No ----> E[End]
 ```
 
-### WiFi Remote Control
+## WiFi Remote Control
 
 <img src="./images/wifi_control.jpg" width="30%"> 
 
