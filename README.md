@@ -8,6 +8,7 @@
 
 ## TODO
 - [ ] Upload mower firmware over gateway webportal;
+- [ ] Change gateway IP range so WiFi controller is accesible over the "home" network;
 
 ## Apps
 
@@ -16,13 +17,15 @@
 
 ## Concept
 
+### SPARTN and High Precision Position
+
 ```mermaid
-flowchart TD
-    A[Start] --> B{Is it?}
-    B -- Yes --> C[OK]
-    C --> D[Rethink]
-    D --> B
-    B -- No ----> E[End]
+flowchart LR
+    A(Point Perfect) --  SPARTN --> B(Thingstream Broker)
+    B <-- MQTT --> C(nora-w1)
+    C -- SPARTN --> D(ZED-F9P)
+    C -- keys --> D(ZED-F9P)
+    D -- Position --> C
 ```
 
 ## WiFi Remote Control
