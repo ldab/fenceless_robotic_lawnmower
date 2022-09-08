@@ -1,4 +1,0 @@
-[submodule "lib/ubxlib"]
-	path = lib/ubxlib
-	url = git@github.com:u-blox/ubxlib.git
-	branch = master
