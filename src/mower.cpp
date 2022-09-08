@@ -7,6 +7,7 @@
 #include "rover_config.h" // TODO
 #include "wifi_helper.h"
 #include "wifi_remote_control.h"
+#include "gpio.h"
 
 #include <ubxlib.h>
 
@@ -79,6 +80,7 @@ void setup()
 {
 
   Serial.begin(115200);
+  gpios_init();
 
   esp_log_level_set("*", ESP_LOG_INFO);
   esp_log_level_set("dhcpc", ESP_LOG_DEBUG);
