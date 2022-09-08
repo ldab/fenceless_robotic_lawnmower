@@ -21,6 +21,8 @@
 #include "esp_log.h"
 #include "mqtt_client.h"
 
+#include "Arduino.h"
+
 // HTTPS url for ZTP API request
 #define THINGSTREAM_SERVER  "api.thingstream.io"
 #define THINGSTREAM_ZTPPATH "/ztp/pointperfect/credentials"
@@ -202,7 +204,7 @@ static void mqtt_app_start(void)
       .cert_pem        = rootCa,
   };
 
-  ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
+  log_i("[APP] Free memory: %d bytes", esp_get_free_heap_size());
   esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
   /* The last argument may be used to pass data to the event handler, in this
    * example mqtt_event_handler */
