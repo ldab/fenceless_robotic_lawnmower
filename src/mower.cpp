@@ -3,11 +3,11 @@
 #include <HTTPClient.h>
 
 #include "driving_mode.h"
+#include "gpio.h"
 #include "point_perfect.h"
 #include "rover_config.h" // TODO
 #include "wifi_helper.h"
 #include "wifi_remote_control.h"
-#include "gpio.h"
 
 #include <ubxlib.h>
 
@@ -78,6 +78,7 @@ static void handle_wifi_controller_status(WifiControllerStatus status)
 
 void setup()
 {
+  set_led(RED, FAST);
 
   Serial.begin(115200);
   gpios_init();
@@ -128,6 +129,8 @@ void loop()
   }
 
   if (wifi_sta_connected) {
+
+    set_led(GREEN, SLOW);
 
     // pp_connect("pp.services.u-blox.com", 8883,
     //            "ebf8071d-f02e-4882-8cf8-54ff397f0e45");

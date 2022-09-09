@@ -6,7 +6,7 @@ void TaskLed(void *pvParameters)
 
   for (;;) // A Task shall never return or exit.
   {
-    switch (led.color) {
+    switch (led.colour) {
     case RED:
       digitalWrite(LED_R, !digitalRead(LED_R));
       break;
@@ -22,8 +22,15 @@ void TaskLed(void *pvParameters)
       digitalWrite(LED_G, !digitalRead(LED_G));
       break;
     }
-    vTaskDelay(500 / portTICK_PERIOD_MS);
+    vTaskDelay(pdMS_TO_TICKS(1000 / led.rate));
   }
+  vTaskDelete(NULL);
+}
+
+void set_led(colour_t colour, uint32_t rate)
+{
+  led.colour = colour;
+  led.rate   = rate;
 }
 
 void gpios_init(void)
@@ -31,6 +38,11 @@ void gpios_init(void)
   pinMode(LED_R, OUTPUT);
   pinMode(LED_G, OUTPUT);
   pinMode(LED_B, OUTPUT);
+
+  pinMode(15, OUTPUT);
+  pinMode(16, OUTPUT);
+  digitalWrite(15, HIGH);
+  digitalWrite(16, HIGH);
 
   digitalWrite(LED_R, HIGH);
   digitalWrite(LED_G, HIGH);

@@ -15,13 +15,13 @@
   ((1ULL << LED_R) | (1ULL << LED_G) | (1ULL << LED_B))
 #define ESP_INTR_FLAG_DEFAULT 0
 
-static uint8_t uLedParams;
+typedef enum { RED, GREEN, BLUE, CYAN, WHITE } colour_t;
+typedef enum { SLOW = 2, MEDIUM = 4, FAST = 6 } rate_t;
 
-typedef enum { RED, GREEN, BLUE } color_t;
-
-static struct led_t {
-  color_t color;
-  uint32_t freq;
+static struct {
+  colour_t colour;
+  uint32_t rate;
 } led;
 
 void gpios_init(void);
+void set_led(colour_t colour, uint32_t rate = 2);

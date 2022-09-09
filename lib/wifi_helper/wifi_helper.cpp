@@ -1,5 +1,6 @@
 #include "wifi_helper.h"
 #include <esp_wifi.h>
+#include "gpio.h"
 
 #define WIFI_STA_SSID    "SSID"
 #define WIFI_STA_PASS    "PASS"
@@ -36,10 +37,12 @@ void WiFiEvent(WiFiEvent_t event)
     break;
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
     ESP_LOGI(__func__, "STA IP: %s", WiFi.localIP().toString().c_str());
+    set_led(GREEN, SLOW);
     wifi_sta_connected = true;
     break;
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
     ESP_LOGI(__func__, "WIFI_STA_DISCONNECTED");
+    set_led(RED, FAST);
     wifi_sta_connected = false;
     break;
   default:
