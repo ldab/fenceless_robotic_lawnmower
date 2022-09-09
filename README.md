@@ -48,6 +48,31 @@ QGC WPL <VERSION>\r\n
 
 https://mavlink.io/en/file_formats/
 
+## Hardware
+
+### Wheel motor
+
+#### Speed
+
+Commercial units goes 16-18 m/min (), and has 205mm diameter $speed / (π * D) = ~RPM$ therefore we need something between 24 and 28 RPM.
+
+#### Torque
+
+You can go crazy about the numbers [Required Power and Torque](https://www.engineeringtoolbox.com/cars-power-torque-d_1784.html), but I go like this:
+
+$$Fr = 15Kg * 9.81m/s2 * 0.2 (N)$$
+$$a = 18 / 60 (m/s2)$$
+$$Fa = 15kg * a (N)$$
+$$Tr = Fr * 0.1m (Nm)$$
+$$Ta = Fa * 0.1m (Nm)$$
+$$Tt = Ta + Tr$$
+
+We have 2x motors so `~7.5Nm` should be alright.
+
+### Blade motor
+
+Blade seems to run at 3500RPM
+
 ## Scrapbook:
 
 * Board definition: https://github.com/platformio/platform-espressif32/blob/master/boards/esp32-s3-devkitc-1.json
