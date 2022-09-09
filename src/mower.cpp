@@ -76,6 +76,26 @@ static void handle_wifi_controller_status(WifiControllerStatus status)
   }
 }
 
+static void handle_corrections_sub(void *handler_args, esp_event_base_t base,
+                                   int32_t event_id, void *event_data)
+{
+  esp_mqtt_event_handle_t event = (esp_mqtt_event_handle_t)event_data;
+  if ((esp_mqtt_event_id_t)event_id == MQTT_EVENT_DATA &&
+      strcmp(event->topic, "/pp/Lb/eu")) {
+    log_d("/pp/Lb/eu");
+  }
+}
+
+static void handle_key_sub(void *handler_args, esp_event_base_t base,
+                                   int32_t event_id, void *event_data)
+{
+  esp_mqtt_event_handle_t event = (esp_mqtt_event_handle_t)event_data;
+  if ((esp_mqtt_event_id_t)event_id == MQTT_EVENT_DATA &&
+      strcmp(event->topic, "/pp/ubx/0236/Lb")) {
+    log_d("/pp/ubx/0236/Lb");
+  }
+}
+
 void setup()
 {
   set_led(RED, FAST);
@@ -98,6 +118,8 @@ void setup()
     vTaskDelay(100);
 
   pp_init(NULL, NULL, NULL);
+  pp_subscribe("/pp/Lb/eu", &handle_corrections_sub);
+  pp_subscribe("/pp/ubx/0236/Lb", &handle_corrections_sub);
 }
 
 void loop()

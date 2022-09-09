@@ -1,5 +1,4 @@
 #include "point_perfect.h"
-#include "esp_event.h"
 #include "esp_netif.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
@@ -19,7 +18,6 @@
 #include "lwip/sockets.h"
 
 #include "esp_log.h"
-#include "mqtt_client.h"
 
 #include "Arduino.h"
 
@@ -128,6 +126,7 @@ const char rootCa[] =
     "rqXRfboQnoZsG4q5WTP468SQvvG5\n"
     "-----END CERTIFICATE-----\n";
 
+static esp_mqtt_client_handle_t client;
 static const char *TAG = "MQTTS_EXAMPLE";
 
 static void log_error_if_nonzero(const char *message, int error_code)
@@ -148,17 +147,12 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base,
   switch ((esp_mqtt_event_id_t)event_id) {
   case MQTT_EVENT_CONNECTED:
     ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-    msg_id = esp_mqtt_client_subscribe(client, "/pp/Lb/eu", 0);
-    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
     break;
   case MQTT_EVENT_DISCONNECTED:
     ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
     break;
-
   case MQTT_EVENT_SUBSCRIBED:
     ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
-    // msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
-    ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
     break;
   case MQTT_EVENT_UNSUBSCRIBED:
     ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
@@ -167,11 +161,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base,
     ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
     break;
   case MQTT_EVENT_DATA:
-    printf("MQTT_EVENT_DATA, received %d bytes\r\n", event->data_len);
-    printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-    // printf("DATA=");
-    // for (size_t i = 0; i < event->data_len; i++)
-    //   printf("%02X", event->data[i]);
+    // log_i("MQTT_EVENT_DATA, received %d bytes", event->data_len);
+    // log_i("TOPIC=%.*s", event->topic_len, event->topic);
     break;
   case MQTT_EVENT_ERROR:
     ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
@@ -205,9 +196,8 @@ static void mqtt_app_start(void)
   };
 
   log_i("[APP] Free memory: %d bytes", esp_get_free_heap_size());
-  esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
-  /* The last argument may be used to pass data to the event handler, in this
-   * example mqtt_event_handler */
+  client = esp_mqtt_client_init(&mqtt_cfg);
+
   esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler,
                                  NULL);
   esp_mqtt_client_start(client);
@@ -217,6 +207,15 @@ esp_err_t pp_init(const char *_rootCa, const char *_clientCert,
                   const char *_clientKey)
 {
   mqtt_app_start();
+
+  return ESP_OK;
+}
+
+esp_err_t pp_subscribe(const char *topic, esp_event_handler_t subCb)
+{
+  log_i("subscribe to %s", topic);
+  esp_mqtt_client_subscribe(client, topic, 0);
+  esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, subCb, NULL);
 
   return ESP_OK;
 }
