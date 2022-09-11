@@ -9,7 +9,7 @@
 #define GPIO_INPUT_PIN_SEL                                                     \
   ((1ULL << BUTTON2) | (1ULL << BUTTON3) | (1ULL << BUTTON4))
 #define LED_R 5
-#define LED_G 2
+#define LED_G 3
 #define LED_B 8
 #define GPIO_OUTPUT_PIN_SEL                                                    \
   ((1ULL << LED_R) | (1ULL << LED_G) | (1ULL << LED_B))

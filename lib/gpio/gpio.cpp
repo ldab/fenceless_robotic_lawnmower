@@ -44,9 +44,9 @@ void gpios_init(void)
   digitalWrite(15, HIGH);
   digitalWrite(16, HIGH);
 
-  digitalWrite(LED_R, HIGH);
-  digitalWrite(LED_G, HIGH);
-  digitalWrite(LED_B, HIGH);
+  digitalWrite(LED_R, LOW);
+  digitalWrite(LED_G, LOW);
+  digitalWrite(LED_B, LOW);
 
   xTaskCreate(TaskLed, "TaskLed", 1024, NULL, 0, NULL);
 }
