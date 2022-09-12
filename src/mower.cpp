@@ -121,6 +121,11 @@ static void handle_corrections_sub(void *handler_args, esp_event_base_t base,
   if ((esp_mqtt_event_id_t)event_id == MQTT_EVENT_DATA &&
       strcmp(event->topic, "/pp/Lb/eu")) {
     log_d("/pp/Lb/eu");
+    char *buffer;
+    buffer = (char *)malloc(event->data_len);
+    uGnssUtilUbxTransparentSendReceive(devHandle, buffer,
+                                       sizeof(event->data_len), NULL, 0);
+    free(buffer);
   }
 }
 
@@ -131,6 +136,11 @@ static void handle_key_sub(void *handler_args, esp_event_base_t base,
   if ((esp_mqtt_event_id_t)event_id == MQTT_EVENT_DATA &&
       strcmp(event->topic, "/pp/ubx/0236/Lb")) {
     log_d("/pp/ubx/0236/Lb");
+    char *buffer;
+    buffer = (char *)malloc(event->data_len);
+    uGnssUtilUbxTransparentSendReceive(devHandle, buffer,
+                                       sizeof(event->data_len), NULL, 0);
+    free(buffer);
   }
 }
 
@@ -191,6 +201,7 @@ void setup()
   // Open the device
   returnCode = uDeviceOpen(&gDeviceCfg, &devHandle);
   uPortLog("Opened device with return code %d.\n", returnCode);
+  uGnssSetUbxMessagePrint(devHandle, false);
 
   // You may configure GNSS as required here
   // here using any of the GNSS API calls.
@@ -199,21 +210,32 @@ void setup()
   uPortLog("Bringing up the network...\n");
   if (uNetworkInterfaceUp(devHandle, U_NETWORK_TYPE_GNSS, &gNetworkCfg) == 0) {
 
+    char ubxRate[] = {0xB5, 0x62, 0x06, 0x08, 0x06, 0x00, 0x64,
+                      0x00, 0x01, 0x00, 0x01, 0x00, 0x7A, 0x12};
+    char response[128];
+    log_i("NAV-RATE = 10Hz");
+    uGnssUtilUbxTransparentSendReceive(devHandle, ubxRate, sizeof(ubxRate),
+                                       response, 128);
+
     // Get location
-    if (uLocationGet(devHandle, U_LOCATION_TYPE_GNSS, NULL, NULL, &location,
-                     NULL) == 0) {
-      uPortLog("I am here: https://maps.google.com/?q=%c%d.%07d/%c%d.%07d\n",
-               latLongToBits(location.latitudeX1e7, &whole, &fraction), whole,
-               fraction,
-               latLongToBits(location.longitudeX1e7, &whole, &fraction), whole,
-               fraction);
-    } else {
-      uPortLog("Unable to get a location fix!\n");
+    for (;;) {
+      if (uLocationGet(devHandle, U_LOCATION_TYPE_GNSS, NULL, NULL, &location,
+                       NULL) == 0) {
+        uPortLog("I am here: https://maps.google.com/?q=%c%d.%07d/%c%d.%07d\n",
+                 latLongToBits(location.latitudeX1e7, &whole, &fraction), whole,
+                 fraction,
+                 latLongToBits(location.longitudeX1e7, &whole, &fraction),
+                 whole, fraction);
+      } else {
+        uPortLog("Unable to get a location fix!\n");
+      }
+      printf("%d\n", millis());
+      vTaskDelay(pdMS_TO_TICKS(50));
     }
 
     // When finished with the GNSS network layer
-    uPortLog("Taking down GNSS...\n");
-    uNetworkInterfaceDown(devHandle, U_NETWORK_TYPE_GNSS);
+    // uPortLog("Taking down GNSS...\n");
+    // uNetworkInterfaceDown(devHandle, U_NETWORK_TYPE_GNSS);
   } else {
     uPortLog("Unable to bring up GNSS!\n");
   }
