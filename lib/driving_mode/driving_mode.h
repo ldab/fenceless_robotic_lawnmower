@@ -8,6 +8,15 @@ typedef enum RoverMode {
   ROBOT_ARM,
 } RoverMode;
 
-void rover_driving_set_drive_mode(RoverMode mode);
-void rover_driving_move(uint16_t signal);
-void rover_driving_steer(uint16_t signal);
+typedef enum SpinDirection_t {
+  CLOCKWISE,
+  ANTICLOCKWISE,
+} SpinDirection;
+
+typedef struct driveSignal_t {
+  uint16_t steer;
+  uint16_t direction;
+} driveSignal;
+
+void rover_driving_move(driveSignal_t *signal);
+void steer_spin(SpinDirection_t direction, uint8_t speed);

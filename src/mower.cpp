@@ -106,9 +106,11 @@ static void handle_wifi_controller_status(WifiControllerStatus status)
 {
   log_i("Wifi Controller status: %s", status ? "DISCONNECTED" : "CONNECTED");
   if (status != WIFI_CONTROLLER_CONNECTED) {
-    handle_controller_disconnected(0);
+    set_led(YELLOW, SLOW);
     wifi_control_enabled = false;
+    handle_controller_disconnected(0);
   } else {
+    set_led(BLUE, FAST);
     wifi_control_enabled = true;
   }
 }
@@ -160,7 +162,7 @@ static char latLongToBits(int32_t thingX1e7, int32_t *pWhole,
 
 void setup()
 {
-  set_led(RED, FAST);
+  set_led(RED, SLOW);
 
   Serial.begin(115200);
 
@@ -179,6 +181,8 @@ void setup()
 
   while (!wifi_sta_connected && millis() < 20000)
     vTaskDelay(100);
+
+  set_led(RED, FAST);
 
   int32_t whole    = 0;
   int32_t fraction = 0;

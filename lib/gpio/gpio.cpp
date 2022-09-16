@@ -66,10 +66,10 @@ void gpios_init(void)
   pinMode(LED_B, OUTPUT);
 
   pinMode(MOTOR_STANDBY, OUTPUT);
-  pinMode(MOTOR_R1, OUTPUT);
-  pinMode(MOTOR_R2, OUTPUT);
-  pinMode(MOTOR_L1, OUTPUT);
-  pinMode(MOTOR_L2, OUTPUT);
+  pinMode(MOTOR_LEFTFORW, OUTPUT);
+  pinMode(MOTOR_LEFTREV, OUTPUT);
+  pinMode(MOTOR_RIGHTFORW, OUTPUT);
+  pinMode(MOTOR_RIGHTREV, OUTPUT);
 
   digitalWrite(MOTOR_STANDBY, LOW);
 

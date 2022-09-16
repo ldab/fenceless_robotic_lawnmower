@@ -1,76 +1,92 @@
 #include "driving_mode.h"
+#include "Arduino.h"
 #include "esp_system.h"
+#include "gpio.h"
 #include "rover_config.h"
 
-static void steer_normal(uint16_t signal);
-static void steer_spin(uint16_t signal);
+#define FULL 255
 
 enum MotorDirection { MOTOR_IDLE, MOTOR_FORWARD, MOTOR_BACKWARD };
 
 static MotorDirection motor_state   = MOTOR_IDLE;
 static RoverMode current_rover_mode = DRIVE_TURN_NORMAL;
 
-void rover_driving_set_drive_mode(RoverMode mode) { current_rover_mode = mode; }
-
-void rover_driving_move(uint16_t signal)
+void rover_driving_move(driveSignal_t *signal)
 {
-  switch (current_rover_mode) {
-  case DRIVE_TURN_NORMAL:
-    if (signal < RC_CENTER && signal > 0) { // MOTOR_Backward
-      // When going from MOTOR_forward/MOTOR_idle to reverse, motors (ESC) need
-      // to be set in reverse mode
-      if (motor_state == MOTOR_IDLE) {
-        motor_state = MOTOR_BACKWARD;
-      }
+  log_v("steer %d direction %d", signal->steer, signal->direction);
 
-    } else if (signal > RC_CENTER) {
-      motor_state = MOTOR_FORWARD;
+  // steer right side of controller, 1000 to 2000;
+  // direction left side of controller, 1000 to 2000;
+  float m           = (float)(FULL + 0) / (2000 - 1500);
+  float _direction  = m * signal->direction - m * 1500;
+  int16_t direction = static_cast<int16_t>(_direction);
+  float _steer      = m * signal->steer - m * 1500;
+  int16_t steer     = static_cast<int16_t>(_steer);
+
+  if (signal->steer == 1500) {
+    // forward and backward
+    if (direction > 0) {
+      digitalWrite(MOTOR_STANDBY, HIGH);
+      analogWrite(MOTOR_LEFTFORW, direction);
+      analogWrite(MOTOR_LEFTREV, LOW);
+      analogWrite(MOTOR_RIGHTFORW, LOW);
+      analogWrite(MOTOR_RIGHTREV, direction);
     } else {
-      motor_state = MOTOR_IDLE;
+      digitalWrite(MOTOR_STANDBY, HIGH);
+      analogWrite(MOTOR_LEFTFORW, LOW);
+      analogWrite(MOTOR_LEFTREV, abs(direction));
+      analogWrite(MOTOR_RIGHTFORW, abs(direction));
+      analogWrite(MOTOR_RIGHTREV, LOW);
     }
-    break;
-  case DRIVE_TURN_SPIN: {
-    uint16_t diff = abs((int16_t)RC_CENTER - (int16_t)signal);
-
-    if (signal < RC_CENTER && signal > 0) { // Spin Anticlockwise
-      if (motor_state == MOTOR_IDLE) {
-        motor_state = MOTOR_FORWARD;
-      }
-    } else if (signal > RC_CENTER) {
-      if (motor_state == MOTOR_IDLE) {
-        motor_state = MOTOR_FORWARD;
-      }
+  } else if (signal->direction == 1500) {
+    // spin/rotate
+    if (steer > 0) {
+      steer_spin(CLOCKWISE, abs(steer));
     } else {
-      motor_state = MOTOR_IDLE;
+      steer_spin(ANTICLOCKWISE, abs(steer));
     }
-    break;
-  }
-  default:
-    break;
-  }
-}
-
-void rover_driving_steer(uint16_t signal)
-{
-  switch (current_rover_mode) {
-  case DRIVE_TURN_NORMAL:
-    steer_normal(signal);
-    break;
-  case DRIVE_TURN_SPIN:
-    steer_spin(signal);
-    break;
-  default:
-    break;
-  }
-}
-
-static void steer_normal(uint16_t signal)
-{
-  uint16_t diff = abs((int16_t)RC_CENTER - (int16_t)signal);
-  if (signal < RC_CENTER && signal > 0) { // Left turn
-  } else if (signal > RC_CENTER) {        // Right turn
   } else {
+    if (direction > 0 && steer > 0) {
+      digitalWrite(MOTOR_STANDBY, HIGH);
+      analogWrite(MOTOR_LEFTFORW, direction);
+      analogWrite(MOTOR_LEFTREV, LOW);
+      analogWrite(MOTOR_RIGHTFORW, LOW);
+      analogWrite(MOTOR_RIGHTREV, direction - steer);
+    } else if (direction > 0 && steer < 0) {
+      digitalWrite(MOTOR_STANDBY, HIGH);
+      analogWrite(MOTOR_LEFTFORW, direction - steer);
+      analogWrite(MOTOR_LEFTREV, LOW);
+      analogWrite(MOTOR_RIGHTFORW, LOW);
+      analogWrite(MOTOR_RIGHTREV, direction);
+    } else if (direction < 0 && steer > 0) {
+      digitalWrite(MOTOR_STANDBY, HIGH);
+      analogWrite(MOTOR_LEFTFORW, LOW);
+      analogWrite(MOTOR_LEFTREV, abs(direction));
+      analogWrite(MOTOR_RIGHTFORW, abs(direction) + steer);
+      analogWrite(MOTOR_RIGHTREV, LOW);
+    } else {
+      digitalWrite(MOTOR_STANDBY, HIGH);
+      analogWrite(MOTOR_LEFTFORW, LOW);
+      analogWrite(MOTOR_LEFTREV, abs(direction) + steer);
+      analogWrite(MOTOR_RIGHTFORW, abs(direction));
+      analogWrite(MOTOR_RIGHTREV, LOW);
+    }
   }
 }
 
-static void steer_spin(uint16_t signal) {}
+void steer_spin(SpinDirection_t direction, uint8_t speed)
+{
+  if (direction == CLOCKWISE) {
+    digitalWrite(MOTOR_STANDBY, HIGH);
+    analogWrite(MOTOR_LEFTFORW, speed);
+    analogWrite(MOTOR_LEFTREV, LOW);
+    analogWrite(MOTOR_RIGHTFORW, LOW);
+    analogWrite(MOTOR_RIGHTREV, LOW);
+  } else {
+    digitalWrite(MOTOR_STANDBY, HIGH);
+    analogWrite(MOTOR_LEFTFORW, LOW);
+    analogWrite(MOTOR_LEFTREV, LOW);
+    analogWrite(MOTOR_RIGHTFORW, LOW);
+    analogWrite(MOTOR_RIGHTREV, speed);
+  }
+}
