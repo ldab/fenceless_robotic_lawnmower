@@ -27,21 +27,21 @@ void WiFiEvent(WiFiEvent_t event)
     WiFi.enableIpV6();
     break;
   case ARDUINO_EVENT_WIFI_STA_GOT_IP6:
-    ESP_LOGI(__func__, "STA IPv6: %s", WiFi.localIPv6().toString().c_str());
+    log_i("STA IPv6: %s", WiFi.localIPv6().toString().c_str());
     break;
   case ARDUINO_EVENT_WIFI_AP_GOT_IP6:
-    ESP_LOGI(__func__, "AP IPv6: %s", WiFi.softAPIPv6().toString().c_str());
+    log_i("AP IPv6: %s", WiFi.softAPIPv6().toString().c_str());
     break;
   case ARDUINO_EVENT_WIFI_AP_STAIPASSIGNED:
-    ESP_LOGI(__func__, "WIFI_AP_STAIPASSIGNED: %d", WiFi.softAPgetStationNum());
+    log_i("WIFI_AP_STAIPASSIGNED: %d", WiFi.softAPgetStationNum());
     break;
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-    ESP_LOGI(__func__, "STA IP: %s", WiFi.localIP().toString().c_str());
+    log_i("STA IP: %s", WiFi.localIP().toString().c_str());
     set_led(GREEN, SLOW);
     wifi_sta_connected = true;
     break;
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-    ESP_LOGI(__func__, "WIFI_STA_DISCONNECTED");
+    log_i("WIFI_STA_DISCONNECTED");
     set_led(RED, FAST);
     wifi_sta_connected = false;
     break;

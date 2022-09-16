@@ -88,7 +88,6 @@ static uint16_t filter_signal(uint16_t *signals)
   if (signal > 1480 && signal < 1520)
     return RC_CENTER;
   return signal;
-  ;
 }
 
 static void handle_controller_disconnected(uint16_t last_sampled_signal)
@@ -105,8 +104,7 @@ static void handle_controller_disconnected(uint16_t last_sampled_signal)
 
 static void handle_wifi_controller_status(WifiControllerStatus status)
 {
-  ESP_LOGI(__func__, "Wifi Controller status: %s\n",
-           status ? "DISCONNECTED" : "CONNECTED");
+  log_i("Wifi Controller status: %s", status ? "DISCONNECTED" : "CONNECTED");
   if (status != WIFI_CONTROLLER_CONNECTED) {
     handle_controller_disconnected(0);
     wifi_control_enabled = false;
@@ -195,7 +193,7 @@ void setup()
 
   // Open the device
   returnCode = uDeviceOpen(&gDeviceCfg, &devHandle);
-  uPortLog("Opened device with return code %d.\n", returnCode);
+  log_i("Opened device with return code %d.\n", returnCode);
   uGnssSetUbxMessagePrint(devHandle, false);
 
   // You may configure GNSS as required here
@@ -248,25 +246,17 @@ void setup()
 void loop()
 {
   if (wifi_control_enabled) {
-    uint16_t motor_signal = RC_CENTER;
+    driveSignal_t motor_signal = {0};
 
     rc_values[RC_STEER_CHANNEL][rc_value_index] =
         get_controller_channel_value(RC_STEER_CHANNEL);
     rc_values[RC_MOTOR_CHANNEL][rc_value_index] =
         get_controller_channel_value(RC_MOTOR_CHANNEL);
-    rc_values[RC_HEAD_PITCH_CHANNEL][rc_value_index] =
-        get_controller_channel_value(RC_HEAD_PITCH_CHANNEL);
-    rc_values[RC_HEAD_YAW_CHANNEL][rc_value_index] =
-        get_controller_channel_value(RC_HEAD_YAW_CHANNEL);
 
-    if (current_rover_mode == DRIVE_TURN_NORMAL) {
-      motor_signal = filter_signal(rc_values[RC_MOTOR_CHANNEL]);
-    } else if (current_rover_mode == DRIVE_TURN_SPIN) {
-      motor_signal = filter_signal(rc_values[RC_STEER_CHANNEL]);
-    }
+    motor_signal.steer     = filter_signal(rc_values[RC_STEER_CHANNEL]);
+    motor_signal.direction = filter_signal(rc_values[RC_MOTOR_CHANNEL]);
 
-    rover_driving_move(motor_signal);
-    rover_driving_steer(filter_signal(rc_values[RC_STEER_CHANNEL]));
+    rover_driving_move(&motor_signal);
 
     rc_value_index = (rc_value_index + 1) % RC_FILTER_SAMPLES;
 
@@ -274,32 +264,6 @@ void loop()
   }
 
   if (wifi_sta_connected) {
-
     set_led(GREEN, SLOW);
-
-    // pp_connect("pp.services.u-blox.com", 8883,
-    //            "ebf8071d-f02e-4882-8cf8-54ff397f0e45");
-    //  pp_onMessageCb();
-    // pp_subscribe("/pp/key/ip", 1);
-
-    // HTTPClient http;
-
-    // http.begin("http://httpbin.org/get"); // HTTP
-
-    // int httpCode = http.GET();
-
-    // // httpCode will be negative on error
-    // if (httpCode > 0) {
-    //   // HTTP header has been send and Server response header has been
-    //   handled Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-    // } else {
-    //   Serial.printf("[HTTP] GET... failed, error: %s\n",
-    //                 http.errorToString(httpCode).c_str());
-    // }
-
-    // http.getString();
-
-    // http.end();
-    // log_i("RRSI: %ddBm", WiFi.RSSI());
   }
 }
