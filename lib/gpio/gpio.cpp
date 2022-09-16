@@ -9,17 +9,43 @@ void TaskLed(void *pvParameters)
     switch (led.colour) {
     case RED:
       digitalWrite(LED_R, !digitalRead(LED_R));
-      break;
-    case BLUE:
-      digitalWrite(LED_B, !digitalRead(LED_B));
+      digitalWrite(LED_G, LOW);
+      digitalWrite(LED_B, LOW);
       break;
     case GREEN:
+      digitalWrite(LED_R, LOW);
       digitalWrite(LED_G, !digitalRead(LED_G));
+      digitalWrite(LED_B, LOW);
       break;
-    default:
+    case BLUE:
+      digitalWrite(LED_R, LOW);
+      digitalWrite(LED_G, LOW);
       digitalWrite(LED_B, !digitalRead(LED_B));
+      break;
+    case CYAN:
+      digitalWrite(LED_R, LOW);
+      digitalWrite(LED_G, !digitalRead(LED_G));
+      digitalWrite(LED_B, !digitalRead(LED_B));
+      break;
+    case PURPLE:
+      digitalWrite(LED_R, !digitalRead(LED_R));
+      digitalWrite(LED_G, LOW);
+      digitalWrite(LED_B, !digitalRead(LED_B));
+      break;
+    case YELLOW:
       digitalWrite(LED_R, !digitalRead(LED_R));
       digitalWrite(LED_G, !digitalRead(LED_G));
+      digitalWrite(LED_B, LOW);
+      break;
+    case WHITE:
+      digitalWrite(LED_R, !digitalRead(LED_R));
+      digitalWrite(LED_G, !digitalRead(LED_G));
+      digitalWrite(LED_B, !digitalRead(LED_B));
+      break;
+    default:
+      digitalWrite(LED_R, LOW);
+      digitalWrite(LED_G, LOW);
+      digitalWrite(LED_B, LOW);
       break;
     }
     vTaskDelay(pdMS_TO_TICKS(1000 / led.rate));
@@ -39,14 +65,13 @@ void gpios_init(void)
   pinMode(LED_G, OUTPUT);
   pinMode(LED_B, OUTPUT);
 
-  pinMode(15, OUTPUT);
-  pinMode(16, OUTPUT);
-  digitalWrite(15, HIGH);
-  digitalWrite(16, HIGH);
+  pinMode(MOTOR_STANDBY, OUTPUT);
+  pinMode(MOTOR_R1, OUTPUT);
+  pinMode(MOTOR_R2, OUTPUT);
+  pinMode(MOTOR_L1, OUTPUT);
+  pinMode(MOTOR_L2, OUTPUT);
 
-  digitalWrite(LED_R, LOW);
-  digitalWrite(LED_G, LOW);
-  digitalWrite(LED_B, LOW);
+  digitalWrite(MOTOR_STANDBY, LOW);
 
   xTaskCreate(TaskLed, "TaskLed", 1024, NULL, 0, NULL);
 }

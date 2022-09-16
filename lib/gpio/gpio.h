@@ -15,7 +15,13 @@
   ((1ULL << LED_R) | (1ULL << LED_G) | (1ULL << LED_B))
 #define ESP_INTR_FLAG_DEFAULT 0
 
-typedef enum { RED, GREEN, BLUE, CYAN, WHITE } colour_t;
+#define MOTOR_STANDBY         14
+#define MOTOR_R1              11
+#define MOTOR_R2              47
+#define MOTOR_L1              10
+#define MOTOR_L2              39
+
+typedef enum { RED, GREEN, YELLOW, BLUE, CYAN, WHITE, PURPLE } colour_t;
 typedef enum { SLOW = 2, MEDIUM = 4, FAST = 6 } rate_t;
 
 static struct {
