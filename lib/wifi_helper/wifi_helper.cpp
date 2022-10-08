@@ -1,10 +1,11 @@
 #include "wifi_helper.h"
 #include <esp_wifi.h>
+#include "gpio.h"
 
 #define WIFI_STA_SSID    "SSID"
 #define WIFI_STA_PASS    "PASS"
-#define WIFI_AP_SSID     "nora-w1-ssid"
-#define WIFI_AP_PASS     "nora-w1-pass"
+#define WIFI_AP_SSID     "ESP_Gateway"
+#define WIFI_AP_PASS     "12345678"
 #define WIFI_AP_CHANNEL  11
 #define WIFI_AP_MAX_CONN 1
 
@@ -13,8 +14,6 @@ volatile bool wifi_ap_connected  = false;
 
 void WiFiEvent(WiFiEvent_t event)
 {
-  ESP_LOGI(__func__, "event: %d", event);
-
   switch (event) {
 
   case ARDUINO_EVENT_WIFI_AP_START:
@@ -28,20 +27,22 @@ void WiFiEvent(WiFiEvent_t event)
     WiFi.enableIpV6();
     break;
   case ARDUINO_EVENT_WIFI_STA_GOT_IP6:
-    ESP_LOGI(__func__, "STA IPv6: %s", WiFi.localIPv6().toString().c_str());
+    log_i("STA IPv6: %s", WiFi.localIPv6().toString().c_str());
     break;
   case ARDUINO_EVENT_WIFI_AP_GOT_IP6:
-    ESP_LOGI(__func__, "AP IPv6: %s", WiFi.softAPIPv6().toString().c_str());
+    log_i("AP IPv6: %s", WiFi.softAPIPv6().toString().c_str());
     break;
   case ARDUINO_EVENT_WIFI_AP_STAIPASSIGNED:
-    ESP_LOGI(__func__, "WIFI_AP_STAIPASSIGNED: %d", WiFi.softAPgetStationNum());
+    log_i("WIFI_AP_STAIPASSIGNED: %d", WiFi.softAPgetStationNum());
     break;
   case ARDUINO_EVENT_WIFI_STA_GOT_IP:
-    ESP_LOGI(__func__, "STA IP: %s", WiFi.localIP().toString().c_str());
+    log_i("STA IP: %s", WiFi.localIP().toString().c_str());
+    set_led(GREEN, SLOW);
     wifi_sta_connected = true;
     break;
   case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-    ESP_LOGI(__func__, "WIFI_STA_DISCONNECTED");
+    log_i("WIFI_STA_DISCONNECTED");
+    set_led(RED, FAST);
     wifi_sta_connected = false;
     break;
   default:
@@ -61,7 +62,7 @@ void wifi_init_softap(const char *ssid, const char *password)
     WiFi.softAP(WIFI_AP_SSID, WIFI_AP_PASS, WIFI_AP_CHANNEL, 0,
                 WIFI_AP_MAX_CONN);
   } else {
-    WiFi.softAP(ssid, password, WIFI_AP_CHANNEL, 0, WIFI_AP_MAX_CONN);
+    WiFi.softAP(ssid, password, WIFI_AP_CHANNEL, false, WIFI_AP_MAX_CONN);
   }
 }
 
@@ -89,7 +90,8 @@ void wifi_init_softapsta(void)
                                          WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N);
 
   WiFi.begin(WIFI_STA_SSID, WIFI_STA_PASS);
-  WiFi.softAP(WIFI_AP_SSID, WIFI_AP_PASS, 1, 0, 2, false);
+  WiFi.softAP(WIFI_AP_SSID, WIFI_AP_PASS, WIFI_AP_CHANNEL, true,
+              WIFI_AP_MAX_CONN);
 }
 
 int8_t wifi_ap_get_sta_rssi(void)
