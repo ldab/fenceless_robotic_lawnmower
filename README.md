@@ -6,7 +6,9 @@
 
 [![GitHub last commit](https://img.shields.io/github/last-commit/ldab/fenceless_robotic_lawnmower.svg?style=social)](https://github.com/ldab/fenceless_robotic_lawnmower)
 
-<img src="./images/mower.gif" width="50%"> 
+<p align="center">
+  <img src="./images/mower.gif" width="30%"> 
+</p>
 
 ## TODO
 - [ ] Upload mower firmware over gateway webportal;
@@ -32,7 +34,9 @@ flowchart LR
 
 ## WiFi Remote Control
 
-<img src="./images/wifi_control.jpg" width="30%"> 
+<p align="center">
+  <img src="./images/wifi_control.jpg" width="30%"> 
+</p>
 
 ## Mission Planner
 
